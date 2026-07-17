@@ -63,9 +63,11 @@ function ReferenceRow({ reference, highlighted }: { reference: Reference; highli
           [{reference.n}]
         </span>
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-4">
-            <p className="font-serif text-[15px] leading-[1.65] text-ink">{reference.gbt}</p>
-            <div className="flex shrink-0 items-center gap-3 pt-0.5">
+          <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
+            <p className="min-w-0 flex-1 basis-64 break-words font-serif text-[15px] leading-[1.65] text-ink">
+              {reference.gbt}
+            </p>
+            <div className="flex items-center gap-3 pt-0.5">
               <span className="micro-label border border-hairline px-2 py-0.5 text-ink-faint">
                 {reference.kind}
               </span>
