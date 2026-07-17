@@ -1,0 +1,257 @@
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ---------- The Reading Room: three reading themes (data-theme on <html>) ---------- */
+  :root {
+    --paper: 247 243 235; /* #F7F3EB */
+    --surface: 253 251 245; /* #FDFBF5 */
+    --faint: 239 235 223; /* #EFEBDF */
+    --ink: 34 30 23; /* #221E17 */
+    --ink-soft: 106 97 84; /* #6A6154 */
+    --ink-faint: 154 144 129; /* #9A9081 */
+    --hairline: 227 220 203; /* #E3DCCB */
+    --accent: 163 78 33; /* #A34E21 rust */
+    --accent-deep: 126 58 20; /* #7E3A14 */
+    --verdigris: 63 108 100; /* #3F6C64 */
+    --ready-h: 62 124 79; /* #3E7C4F */
+    --ready-m: 176 138 46; /* #B08A2E */
+    --ready-l: 162 75 60; /* #A24B3C */
+    --flag-verified-bg: 228 237 232; /* #E4EDE8 */
+    --flag-verified-text: 47 90 80; /* #2F5A50 */
+    --flag-hedge-bg: 243 234 214; /* #F3EAD6 */
+    --flag-hedge-text: 138 106 31; /* #8A6A1F */
+    --radius: 0.125rem; /* sharp, bookish */
+    color-scheme: light;
+  }
+
+  html[data-theme='sepia'] {
+    --paper: 241 230 208; /* #F1E6D0 */
+    --surface: 248 239 223; /* #F8EFDF */
+    --faint: 234 223 197; /* derived */
+    --ink: 56 48 31; /* #38301F */
+    --ink-soft: 122 108 80; /* #7A6C50 */
+    --ink-faint: 164 150 122; /* derived */
+    --hairline: 223 210 182; /* #DFD2B6 */
+    --accent: 163 78 33; /* same rust family */
+    --accent-deep: 126 58 20;
+    --verdigris: 63 108 100;
+    --ready-h: 62 124 79;
+    --ready-m: 176 138 46;
+    --ready-l: 162 75 60;
+    --flag-verified-bg: 222 232 224;
+    --flag-verified-text: 47 90 80;
+    --flag-hedge-bg: 240 226 196;
+    --flag-hedge-text: 138 106 31;
+    color-scheme: light;
+  }
+
+  html[data-theme='ink'] {
+    --paper: 23 19 16; /* #171310 */
+    --surface: 33 27 21; /* #211B15 */
+    --faint: 42 35 27; /* #2A231B */
+    --ink: 236 228 211; /* #ECE4D3 */
+    --ink-soft: 169 156 134; /* #A99C86 */
+    --ink-faint: 110 99 85; /* derived */
+    --hairline: 58 50 39; /* #3A3227 */
+    --accent: 217 142 95; /* #D98E5F */
+    --accent-deep: 229 163 119; /* lightened hover */
+    --verdigris: 127 168 160; /* #7FA8A0 */
+    --ready-h: 111 169 127; /* #6FA97F */
+    --ready-m: 208 169 78; /* #D0A94E */
+    --ready-l: 196 116 95; /* #C4745F */
+    --flag-verified-bg: 38 58 51;
+    --flag-verified-text: 156 200 186;
+    --flag-hedge-bg: 61 51 32;
+    --flag-hedge-text: 216 185 106;
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: auto; /* Lenis owns smoothing */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-paper font-sans text-[15px] text-ink antialiased;
+    font-feature-settings: 'liga';
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.18);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--verdigris));
+    outline-offset: 2px;
+  }
+
+  /* Lenis recommended styles */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  kbd {
+    @apply rounded-sm border border-hairline bg-faint px-1 py-px font-mono text-[0.85em] text-ink-soft;
+  }
+}
+
+@layer components {
+  /* Inter micro-label eyebrow: 11px / uppercase / 0.12em / 600 */
+  .micro-label {
+    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.12em];
+  }
+
+  /* Long-form report prose (rendered chapter HTML from src/content) */
+  .prose-report {
+    @apply max-w-measure font-serif text-[19px] leading-[1.72] text-ink;
+    font-feature-settings: 'onum', 'liga';
+    hyphens: auto;
+  }
+  .prose-report > p {
+    @apply my-5;
+  }
+  .prose-report h2 {
+    @apply mt-[2.2em] font-display text-[30px] font-medium leading-[1.2] tracking-[-0.015em] text-ink;
+  }
+  .prose-report h3 {
+    @apply mt-[1.8em] font-display text-[24px] font-medium leading-[1.25] tracking-[-0.015em] text-ink;
+  }
+  .prose-report h4 {
+    @apply mt-[1.6em] font-display text-[19px] font-medium leading-[1.3] text-ink;
+  }
+  .prose-report a {
+    @apply text-accent underline decoration-hairline underline-offset-2 hover:text-accent-deep hover:decoration-accent;
+  }
+  .prose-report ul,
+  .prose-report ol {
+    @apply my-5 pl-6;
+  }
+  .prose-report ul {
+    @apply list-disc;
+  }
+  .prose-report ol {
+    @apply list-decimal;
+  }
+  .prose-report li {
+    @apply my-1.5;
+  }
+  .prose-report strong {
+    @apply font-semibold;
+  }
+  .prose-report hr {
+    @apply my-10 border-hairline;
+  }
+  /* Citation superscripts: IBM Plex Mono 11px, rust, real buttons/links */
+  .prose-report sup.cite,
+  .prose-report sup.cite a,
+  .prose-report sup.cite button {
+    @apply font-mono text-[11px] leading-none text-accent;
+  }
+  .prose-report sup.cite a,
+  .prose-report sup.cite button {
+    @apply cursor-pointer no-underline hover:text-accent-deep hover:underline;
+  }
+  /* CaseBox: > **Box x.x — …** panels */
+  .prose-report blockquote {
+    @apply my-6 border-l-[3px] border-verdigris bg-faint px-5 py-4 text-[16.5px] leading-[1.65];
+  }
+  .prose-report blockquote p {
+    @apply my-2;
+  }
+  /* DataTable: hairline rules only, mono numerals, hover wash */
+  .prose-report .tablewrap {
+    @apply my-6 overflow-x-auto;
+  }
+  .prose-report table {
+    @apply w-full border-collapse border-t border-b border-hairline text-[15px];
+  }
+  .prose-report thead th {
+    @apply micro-label border-b border-hairline px-3 py-2.5 text-left align-bottom text-ink-soft;
+  }
+  .prose-report tbody td {
+    @apply border-b border-hairline px-3 py-2.5 align-top;
+  }
+  .prose-report tbody tr:last-child td {
+    @apply border-b-0;
+  }
+  .prose-report tbody tr:hover {
+    @apply bg-faint;
+  }
+  .prose-report .math {
+    font-size: 0.95em;
+  }
+  /* Drop cap on chapter openers (first paragraph of a chapter body) */
+  .prose-report .chapter-opener > p:first-of-type::first-letter {
+    @apply float-left mr-2 font-display text-accent;
+    font-size: 3.2em;
+    line-height: 0.9;
+    padding-top: 0.08em;
+  }
+}
+
+@layer utilities {
+  /* ChainFlow dashed connectors: continuous 12s flow, off under reduced motion */
+  .chain-dash-flow {
+    stroke-dasharray: 3 5;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .chain-dash-flow {
+      animation: chain-dash-march 12s linear infinite;
+    }
+  }
+  @keyframes chain-dash-march {
+    to {
+      stroke-dashoffset: -96;
+    }
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ---------- Print: single column, black on white, chrome hidden ---------- */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .prose-report {
+    max-width: 100%;
+    font-size: 11pt;
+  }
+  .prose-report h1,
+  .prose-report h2 {
+    page-break-before: always;
+  }
+  .prose-report figure,
+  .prose-report img {
+    max-width: 16cm;
+  }
+  .prose-report a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+  }
+}
