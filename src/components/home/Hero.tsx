@@ -49,9 +49,47 @@ function ResumeCard() {
 }
 
 /**
- * Home hero — the site's single GSAP showpiece: contour line-drawing, word-split
- * headline, count-up stats, scroll parallax. Isolated here (no Framer Motion in
- * this component tree); all animation is skipped under prefers-reduced-motion.
+ * Count-up that always lands on the final value: setInterval-driven (not rAF,
+ * not GSAP) with a hard completion timeout, so a stalled animation frame can
+ * never leave a wrong number on screen. Markup starts at the final value.
+ */
+function CountUp({ value, comma = false }: { value: number; comma?: boolean }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || prefersReducedMotion()) return
+    const final = comma ? value.toLocaleString('en-US') : String(value)
+    const started = Date.now()
+    const id = window.setInterval(() => {
+      const t = Math.min(1, (Date.now() - started) / 1100)
+      const eased = 1 - Math.pow(1 - t, 3)
+      const n = Math.round(value * eased)
+      el.textContent = comma ? n.toLocaleString('en-US') : String(n)
+      if (t >= 1) {
+        el.textContent = final
+        window.clearInterval(id)
+      }
+    }, 33)
+    const failsafe = window.setTimeout(() => {
+      el.textContent = final
+      window.clearInterval(id)
+    }, 1600)
+    return () => {
+      window.clearInterval(id)
+      window.clearTimeout(failsafe)
+      el.textContent = final
+    }
+  }, [value, comma])
+  return (
+    <span ref={ref}>{comma ? value.toLocaleString('en-US') : value}</span>
+  )
+}
+
+/**
+ * Home hero — the site's cover. Readability contract: all text is fully
+ * rendered without JavaScript; the headline reveal is a self-completing CSS
+ * animation. GSAP owns only the decorative contour line-drawing and the
+ * scroll parallax — never the legibility of the title.
  */
 export default function Hero() {
   const rootRef = useRef<HTMLElement>(null)
@@ -84,42 +122,10 @@ export default function Hero() {
       const root = rootRef.current
       if (!root) return
 
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-
-      /* Text choreography */
-      tl.from('.hero-eyebrow', { opacity: 0, duration: 0.3 }, 0)
-      tl.from('.hero-word', { y: 24, opacity: 0, duration: 0.7, stagger: 0.07 }, 0.05)
-      tl.from(
-        '.hero-underline-svg',
-        { scaleX: 0, transformOrigin: 'left center', duration: 0.6, ease: 'power2.out' },
-        0.8,
-      )
-      tl.from(['.hero-standfirst', '.hero-meta'], { y: 12, opacity: 0, duration: 0.5, stagger: 0.08 }, 0.35)
-      tl.from('.hero-cta', { y: 12, opacity: 0, duration: 0.45, stagger: 0.1 }, 0.55)
-
-      /* Count-up meta stats */
-      root.querySelectorAll<HTMLElement>('.hero-count').forEach((el) => {
-        const target = Number(el.dataset.value ?? '0')
-        const comma = el.dataset.comma === 'true'
-        const state = { n: 0 }
-        tl.to(
-          state,
-          {
-            n: target,
-            duration: 1.1,
-            ease: 'power2.out',
-            onUpdate: () => {
-              const v = Math.round(state.n)
-              el.textContent = comma ? v.toLocaleString('en-US') : String(v)
-            },
-          },
-          0.9,
-        )
-      })
-
-      /* Contour line-drawing */
+      /* Decorative only: contour line-drawing. Text is NOT animated here. */
       const svg = contoursInnerRef.current?.querySelector('svg')
       if (svg) {
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
         const loops = svg.querySelectorAll<SVGPathElement>('path:not(.migration-path)')
         loops.forEach((p) => {
           const len = p.getTotalLength()
@@ -144,7 +150,7 @@ export default function Hero() {
         }
       }
 
-      /* Scroll (first 100vh only): contour parallax up 0.35×, content fades by 80% */
+      /* Scroll (first 100vh only): contour parallax up 0.35×, content fades out */
       if (contoursInnerRef.current) {
         gsap.to(contoursInnerRef.current, {
           y: () => -0.35 * window.innerHeight,
@@ -171,61 +177,88 @@ export default function Hero() {
       style={{ minHeight: 'max(680px, 100dvh)' }}
       aria-label="Report cover"
     >
-      {/* PES-contour backdrop: right-of-center on desktop, behind text at 40% below 900px */}
+      {/* PES-contour backdrop: right-of-center on desktop, left edge masked so
+          it never fights the headline; faint and centered on mobile. */}
       <div
         aria-hidden
         className={cn(
-          'pointer-events-none absolute inset-y-0 right-[-8%] flex w-[60%] items-center text-ink',
-          'max-[900px]:right-auto max-[900px]:left-1/2 max-[900px]:w-[110%] max-[900px]:-translate-x-1/2 max-[900px]:opacity-40',
+          'pointer-events-none absolute inset-y-0 right-[-12%] flex w-[55%] items-center text-ink/70',
+          '[mask-image:linear-gradient(to_right,transparent,black_38%)]',
+          'max-[900px]:right-auto max-[900px]:left-1/2 max-[900px]:top-auto max-[900px]:bottom-0 max-[900px]:h-[55%] max-[900px]:w-[110%] max-[900px]:-translate-x-1/2 max-[900px]:opacity-30',
         )}
       >
         <div ref={contoursInnerRef} className="w-full" />
       </div>
 
+      {/* Paper scrim guaranteeing text contrast over any stray art */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgb(var(--paper))_0%,rgb(var(--paper))_45%,rgb(var(--paper)/0.75)_62%,transparent_85%)] max-[900px]:bg-[linear-gradient(to_bottom,rgb(var(--paper))_0%,rgb(var(--paper))_55%,rgb(var(--paper)/0.6)_75%,transparent_100%)]"
+      />
+
       <div className="relative z-10 mx-auto flex h-full min-h-[inherit] max-w-[1200px] items-center px-6 py-24">
         <div ref={contentRef} className="max-w-[640px]">
-          <p className="hero-eyebrow micro-label text-verdigris">
+          <p className="hero-reveal micro-label text-verdigris" style={{ '--hero-delay': '0ms' } as React.CSSProperties}>
             AN INDEPENDENT-RESEARCHER POSITION PAPER · LUPINE SCIENCE
           </p>
 
           <h1 className="mt-6 font-display text-[42px] font-[480] leading-[1.04] tracking-[-0.015em] text-ink sm:text-[54px] lg:text-[64px]">
             <span className="block overflow-hidden pb-1">
-              <span className="hero-word inline-block">Hard</span>{' '}
-              <span className="hero-word inline-block">Materials,</span>
+              <span className="hero-reveal inline-block" style={{ '--hero-delay': '80ms' } as React.CSSProperties}>
+                Hard
+              </span>{' '}
+              <span className="hero-reveal inline-block" style={{ '--hero-delay': '150ms' } as React.CSSProperties}>
+                Materials,
+              </span>
             </span>
             <span className="block overflow-hidden pb-1">
-              <span className="hero-word inline-block">Honest</span>{' '}
-              <span className="hero-word inline-block">Errors</span>
+              <span className="hero-reveal inline-block" style={{ '--hero-delay': '230ms' } as React.CSSProperties}>
+                Honest
+              </span>{' '}
+              <span className="hero-reveal inline-block" style={{ '--hero-delay': '300ms' } as React.CSSProperties}>
+                Errors
+              </span>
             </span>
           </h1>
-          <ErrorBarUnderline />
+          <div className="hero-reveal" style={{ '--hero-delay': '420ms' } as React.CSSProperties}>
+            <ErrorBarUnderline />
+          </div>
 
-          <p className="hero-standfirst mt-6 max-w-[58ch] font-serif text-[21px] italic leading-[1.5] text-ink-soft">
+          <p
+            className="hero-reveal mt-6 max-w-[58ch] font-serif text-[21px] italic leading-[1.5] text-ink-soft"
+            style={{ '--hero-delay': '380ms' } as React.CSSProperties}
+          >
             A meta-review of AI and <em>ab initio</em> simulation errors in nine classes of
             high-value hard materials, and the discovery roadmap they imply.
           </p>
 
-          <p className="hero-meta mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[12px] tabular text-ink-soft">
+          <p
+            className="hero-reveal mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[12px] tabular text-ink-soft"
+            style={{ '--hero-delay': '470ms' } as React.CSSProperties}
+          >
             <span>
-              <span className="hero-count" data-value="23">23</span> CHAPTERS
+              <CountUp value={23} /> CHAPTERS
             </span>
             <span aria-hidden className="text-ink-faint">·</span>
             <span>
-              ≈<span className="hero-count" data-value="49000" data-comma="true">49,000</span> WORDS
+              ≈<CountUp value={49000} comma /> WORDS
             </span>
             <span aria-hidden className="text-ink-faint">·</span>
             <span>
-              <span className="hero-count" data-value="475">475</span> REFERENCES
+              <CountUp value={475} /> REFERENCES
             </span>
             <span aria-hidden className="text-ink-faint">·</span>
             <span>
-              <span className="hero-count" data-value="3">3</span> EXHIBIT CHARTS
+              <CountUp value={3} /> EXHIBIT CHARTS
             </span>
             <span aria-hidden className="text-ink-faint">·</span>
             <span>RESEARCH DATE 2026-07-17</span>
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <div
+            className="hero-reveal mt-8 flex flex-wrap items-center gap-x-6 gap-y-4"
+            style={{ '--hero-delay': '560ms' } as React.CSSProperties}
+          >
             <Link
               to="/read/ch01"
               className="hero-cta rounded-sm bg-accent px-6 py-3 font-display text-[16px] text-paper transition-colors hover:bg-accent-deep"
