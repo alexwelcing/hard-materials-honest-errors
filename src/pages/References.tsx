@@ -1,4 +1,4 @@
-﻿import PageHeader from '@/components/PageHeader'
+import PageHeader from '@/components/PageHeader'
 import ReferenceLibrary from '@/components/references/ReferenceLibrary'
 import { REPORT_DATE } from '@/lib/report'
 

@@ -1,4 +1,4 @@
-﻿import PageHeader from '@/components/PageHeader'
+import PageHeader from '@/components/PageHeader'
 import StatStrip from '@/components/contents/StatStrip'
 import ReadingPaths from '@/components/contents/ReadingPaths'
 import PartSection from '@/components/contents/PartSection'

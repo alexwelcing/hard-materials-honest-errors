@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router'
+import { Link } from 'react-router'
 import PageHeader from '@/components/PageHeader'
 import Section from '@/components/about/Section'
 import StatStrip from '@/components/about/StatStrip'
@@ -24,7 +24,7 @@ export default function About() {
             <p>
               It is written in the first person and deliberately evidence-dense, because the field
               it surveys carries a documented trust deficit. One note on vocabulary: throughout,
-              MAE means <strong>mean absolute error</strong> â€” never the model architecture of the
+              MAE means <strong>mean absolute error</strong> — never the model architecture of the
               same initials.
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function About() {
         </Section>
 
         <p className="mt-16 border-t border-hairline pt-5 font-mono text-[12px] leading-[1.8] text-ink-faint">
-          Built as a static site â€” Vite + React 19 + TypeScript + Tailwind. Set in Fraunces,
+          Built as a static site — Vite + React 19 + TypeScript + Tailwind. Set in Fraunces,
           Newsreader, Inter, and IBM Plex Mono; math by KaTeX; deployed on Netlify.
         </p>
       </main>

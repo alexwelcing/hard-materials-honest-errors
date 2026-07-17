@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import Hero from '@/components/home/Hero'
@@ -9,7 +9,7 @@ import { exhibits } from '@/content/exhibits'
 const EASE_OUT = [0.16, 1, 0.3, 1] as [number, number, number, number]
 const pad2 = (n: number) => String(n).padStart(2, '0')
 
-/** Scroll reveal â€” fade/rise once, per design Â§5 (Framer Motion; GSAP stays in the hero). */
+/** Scroll reveal — fade/rise once, per design §5 (Framer Motion; GSAP stays in the hero). */
 function Reveal({
   children,
   className,
@@ -79,20 +79,20 @@ function ScrambleText({ text, className }: { text: string; className?: string })
 }
 
 const SUBS: Record<string, string> = {
-  '0': 'â‚€', '1': 'â‚', '2': 'â‚‚', '3': 'â‚ƒ', '4': 'â‚„',
-  '5': 'â‚…', '6': 'â‚†', '7': 'â‚‡', '8': 'â‚ˆ', '9': 'â‚‰',
+  '0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
+  '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉',
 }
 
 /** Convert the corpus's inline LaTeX-ish markers to Unicode for card/gloss display. */
 function cleanInline(s: string): string {
   return s
-    .replace(/\\lambda/g, 'Î»')
-    .replace(/\\omega/g, 'Ï‰')
-    .replace(/\\times/g, 'Ã—')
-    .replace(/\\leq/g, 'â‰¤')
-    .replace(/\\geq/g, 'â‰¥')
-    .replace(/\\approx/g, 'â‰ˆ')
-    .replace(/\\pm/g, 'Â±')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\omega/g, 'ω')
+    .replace(/\\times/g, '×')
+    .replace(/\\leq/g, '≤')
+    .replace(/\\geq/g, '≥')
+    .replace(/\\approx/g, '≈')
+    .replace(/\\pm/g, '±')
     .replace(/\\,/g, ' ')
     .replace(/\{,\}/g, ',')
     .replace(/_\{([^}]*)\}/g, (_, g1: string) => g1.split('').map((c) => SUBS[c] ?? c).join(''))
@@ -102,7 +102,7 @@ function cleanInline(s: string): string {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 2 â€” Thesis in three parts                                   */
+/* Section 2 — Thesis in three parts                                   */
 /* ------------------------------------------------------------------ */
 
 const THESIS = [
@@ -122,7 +122,7 @@ const THESIS = [
     n: '03',
     lead: 'A level playing field, briefly open',
     quote:
-      'the fixes are cheap, public, and unowned â€” a rare three-to-five-year window for a validation-first venture.',
+      'the fixes are cheap, public, and unowned — a rare three-to-five-year window for a validation-first venture.',
   },
 ]
 
@@ -134,7 +134,7 @@ function Thesis() {
       </div>
       <div className="mx-auto max-w-[820px] px-6 py-32">
         <Reveal>
-          <p className="micro-label text-center text-verdigris">THE CLAIM â€” Â§1.1</p>
+          <p className="micro-label text-center text-verdigris">THE CLAIM — §1.1</p>
         </Reveal>
         <div className="mt-14 space-y-14">
           {THESIS.map((t, i) => (
@@ -153,12 +153,12 @@ function Thesis() {
                 </span>
                 <p className="font-display text-[22px] leading-[1.35] text-ink sm:text-[28px]">
                   <strong className="font-semibold">{t.lead}</strong>
-                  <span className="text-ink-soft"> â€” â€œ{t.quote}â€</span>
+                  <span className="text-ink-soft"> — “{t.quote}”</span>
                   <Link
                     to="/read/ch01"
                     className="ml-3 whitespace-nowrap font-mono text-[12px] text-accent hover:text-accent-deep"
                   >
-                    Â§1.1 â†’
+                    §1.1 →
                   </Link>
                 </p>
               </div>
@@ -171,20 +171,20 @@ function Thesis() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 3 â€” The report in nine numbers (Table 1.1)                  */
+/* Section 3 — The report in nine numbers (Table 1.1)                  */
 /* ------------------------------------------------------------------ */
 
 /** Headline error figures per class (verbatim fragments of Table 1.1), aligned
  *  by index with exhibits.nineNumbers.rows; each card links its class chapter. */
 const NINE_META: { chapter: string; figure: string }[] = [
-  { chapter: 'ch04', figure: 'Î» 2.64 vs 1.84' },
+  { chapter: 'ch04', figure: 'λ 2.64 vs 1.84' },
   { chapter: 'ch05', figure: '~1 eV' },
-  { chapter: 'ch06', figure: '4â€“5Ã—' },
-  { chapter: 'ch07', figure: '0.310â€“0.349 eV' },
-  { chapter: 'ch08', figure: '0.2â€“0.4 eV' },
-  { chapter: 'ch09', figure: '15â€“35%' },
+  { chapter: 'ch06', figure: '4–5×' },
+  { chapter: 'ch07', figure: '0.310–0.349 eV' },
+  { chapter: 'ch08', figure: '0.2–0.4 eV' },
+  { chapter: 'ch09', figure: '15–35%' },
   { chapter: 'ch10', figure: '240 ps' },
-  { chapter: 'ch11', figure: '0.77â€“3.04Ã—' },
+  { chapter: 'ch11', figure: '0.77–3.04×' },
   { chapter: 'ch12', figure: '~50%' },
 ]
 
@@ -205,7 +205,7 @@ function NineNumbers() {
               to="/read/ch01"
               className="font-sans text-[14px] text-accent underline decoration-hairline underline-offset-4 hover:text-accent-deep hover:decoration-accent"
             >
-              Read the executive summary â†’
+              Read the executive summary →
             </Link>
           </div>
         </Reveal>
@@ -224,7 +224,7 @@ function NineNumbers() {
                 <div className="flex h-full flex-col border border-hairline bg-paper p-5 transition-all duration-150 hover:-translate-y-0.5 hover:border-accent">
                   <Link to={`/read/${meta.chapter}`} className="block flex-1">
                     <p className="micro-label text-[10px] text-verdigris">
-                      {className.toUpperCase()} Â· CH {chNum}
+                      {className.toUpperCase()} · CH {chNum}
                     </p>
                     <p className="mt-3 font-display text-[26px] leading-none text-ink tabular">
                       <ScrambleText text={meta.figure} />
@@ -241,7 +241,7 @@ function NineNumbers() {
                           to={`/chains#chain-${c}`}
                           className="font-mono text-[10px] tracking-[0.08em] text-accent hover:text-accent-deep"
                         >
-                          CHAIN {c} â†’
+                          CHAIN {c} →
                         </Link>
                       ))}
                     </div>
@@ -257,7 +257,7 @@ function NineNumbers() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 4 â€” Two flagship chains (pull-quote diptych)                */
+/* Section 4 — Two flagship chains (pull-quote diptych)                */
 /* ------------------------------------------------------------------ */
 
 function FlagshipQuote({
@@ -280,12 +280,12 @@ function FlagshipQuote({
         transition={{ duration: 0.5, ease: EASE_OUT }}
       />
       <p className="font-display text-[20px] italic leading-[1.45] text-ink sm:text-[24px]">
-        â€œ{quote}â€
+        “{quote}”
       </p>
       <footer className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="font-mono text-[11px] tracking-[0.08em] text-ink-soft">{caption}</span>
         <Link to={to} className="font-mono text-[11px] tracking-[0.08em] text-accent hover:text-accent-deep">
-          TRACE THE CHAIN â†’
+          TRACE THE CHAIN →
         </Link>
       </footer>
     </blockquote>
@@ -294,16 +294,16 @@ function FlagshipQuote({
 
 function FlagshipChains() {
   const [chain1, chain2] = exhibits.chains
-  /* Verbatim fragments of each chain's sentence (Â§1.3.1), compressed with an
+  /* Verbatim fragments of each chain's sentence (§1.3.1), compressed with an
      ellipsis exactly as the corpus presents the flagships. */
-  const q1 = `Because we have unlocked ${chain1.unlock}, we will discover ${chain1.discover} â€¦ ${chain1.build}.`
-  const q2 = `Because we have unlocked ${chain2.unlock}, we will discover NdFeB-class rare-earth-free magnets â€¦ ${chain2.build}.`
+  const q1 = `Because we have unlocked ${chain1.unlock}, we will discover ${chain1.discover} … ${chain1.build}.`
+  const q2 = `Because we have unlocked ${chain2.unlock}, we will discover NdFeB-class rare-earth-free magnets … ${chain2.build}.`
   return (
     <section aria-label="Two flagship discovery chains" className="mx-auto max-w-[900px] px-6 py-32">
       <Reveal>
         <FlagshipQuote
           quote={q1}
-          caption={`CHAIN 1 Â· READINESS ${chain1.readiness} Â· GAP 0.310â€“0.349 eV â†’ â‰¤40 meV`}
+          caption={`CHAIN 1 · READINESS ${chain1.readiness} · GAP 0.310–0.349 eV → ≤40 meV`}
           to="/chains#chain-1"
         />
       </Reveal>
@@ -313,7 +313,7 @@ function FlagshipChains() {
       <Reveal>
         <FlagshipQuote
           quote={q2}
-          caption={`CHAIN 2 Â· READINESS ${chain2.readiness}`}
+          caption={`CHAIN 2 · READINESS ${chain2.readiness}`}
           to="/chains#chain-2"
         />
       </Reveal>
@@ -323,7 +323,7 @@ function FlagshipChains() {
             to="/chains"
             className="font-sans text-[14px] text-accent underline decoration-hairline underline-offset-4 hover:text-accent-deep hover:decoration-accent"
           >
-            Explore all eleven chains â†’
+            Explore all eleven chains →
           </Link>
         </div>
       </Reveal>
@@ -332,10 +332,10 @@ function FlagshipChains() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 5 â€” Signature exhibits gallery (native SVG thumbnails)      */
+/* Section 5 — Signature exhibits gallery (native SVG thumbnails)      */
 /* ------------------------------------------------------------------ */
 
-/** Mini beforeâ†’after bars (three pairs, from the fix-stack data); after-bars
+/** Mini before→after bars (three pairs, from the fix-stack data); after-bars
  *  re-run their morph on card hover. */
 function FixStackThumb() {
   const rows = [
@@ -364,7 +364,7 @@ function FixStackThumb() {
   )
 }
 
-/** 9Ã—7 micro-grid glyph with readiness dots. */
+/** 9×7 micro-grid glyph with readiness dots. */
 function MatrixThumb() {
   const dots: Record<number, string> = {
     4: 'h', 10: 'm', 18: 'l', 25: 'h', 33: 'm', 40: 'l', 48: 'h', 55: 'm', 61: 'l',
@@ -464,7 +464,7 @@ function ExhibitCard({
       <h3 className="mt-6 font-display text-[22px] text-ink group-hover:text-accent-deep">{title}</h3>
       <p className="mt-2 font-serif text-[15px] leading-relaxed text-ink-soft">{copy}</p>
       <span className="mt-auto block pt-5 font-mono text-[11px] tracking-[0.08em] text-accent">
-        OPEN EXHIBIT â†’
+        OPEN EXHIBIT →
       </span>
     </Link>
   )
@@ -495,7 +495,7 @@ function ExhibitsGallery() {
             to="/matrix"
             badge="TABLE 13.1"
             title="The Master Matrix"
-            copy="Nine classes Ã— errors Ã— CN/US priorities Ã— fixes Ã— impact."
+            copy="Nine classes × errors × CN/US priorities × fixes × impact."
             thumb={<MatrixThumb />}
           />
         </Reveal>
@@ -511,9 +511,9 @@ function ExhibitsGallery() {
         <Reveal className="h-full md:col-span-4" y={32} delay={0.07}>
           <ExhibitCard
             to="/roadmap"
-            badge="TABLES 18.1â€“18.2"
+            badge="TABLES 18.1–18.2"
             title="Phased Roadmap"
-            copy="Three phases against ten hard external gates, 2026â€“2040."
+            copy="Three phases against ten hard external gates, 2026–2040."
             thumb={<RoadmapThumb />}
           />
         </Reveal>
@@ -522,7 +522,7 @@ function ExhibitsGallery() {
             to="/skeptics"
             badge="TABLE 20.1"
             title="The Skeptic Register"
-            copy="Seven claims the field corrected itself â€” and what they cost this venture."
+            copy="Seven claims the field corrected itself — and what they cost this venture."
             thumb={<SkepticsThumb />}
           />
         </Reveal>
@@ -537,7 +537,7 @@ function ExhibitsGallery() {
                 475 sources, GB/T 7714-2015, every one traceable to a citing section.
               </p>
               <span className="mt-4 block font-mono text-[11px] tracking-[0.08em] text-accent">
-                OPEN THE LIBRARY â†’
+                OPEN THE LIBRARY →
               </span>
             </Link>
             <Link
@@ -552,7 +552,7 @@ function ExhibitsGallery() {
                 Working-professional definitions, plus an energy-unit converter.
               </p>
               <span className="mt-4 block font-mono text-[11px] tracking-[0.08em] text-accent">
-                LOOK UP A TERM â†’
+                LOOK UP A TERM →
               </span>
             </Link>
           </div>
@@ -563,7 +563,7 @@ function ExhibitsGallery() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 6 â€” Guided reading paths                                    */
+/* Section 6 — Guided reading paths                                    */
 /* ------------------------------------------------------------------ */
 
 const PATHS: {
@@ -579,7 +579,7 @@ const PATHS: {
     time: '15 MINUTES',
     title: 'The Briefing',
     audience: 'For program managers and investors.',
-    chip: 'â‰ˆ15 MIN Â· 4 STOPS',
+    chip: '≈15 MIN · 4 STOPS',
     stops: [
       { label: 'Executive Summary', to: '/read/ch01' },
       { label: 'The report in nine numbers', to: '/read/ch01#1-2-1' },
@@ -592,10 +592,10 @@ const PATHS: {
     time: '35 MINUTES',
     title: 'The Technical Case',
     audience: 'For computational peers.',
-    chip: 'â‰ˆ35 MIN Â· 4 STOPS',
+    chip: '≈35 MIN · 4 STOPS',
     stops: [
       { label: 'Methods & the Correction Stack', to: '/read/ch03' },
-      { label: 'One class chapter â€” Batteries', to: '/read/ch07' },
+      { label: 'One class chapter — Batteries', to: '/read/ch07' },
       { label: 'Master Matrix', to: '/matrix' },
       { label: 'Skeptic Register', to: '/skeptics' },
     ],
@@ -605,9 +605,9 @@ const PATHS: {
     time: '25 MINUTES',
     title: 'Policy & Programs',
     audience: 'For CN/US program staff and TMS leaders.',
-    chip: 'â‰ˆ25 MIN Â· 5 STOPS',
+    chip: '≈25 MIN · 5 STOPS',
     stops: [
-      { label: 'Master Matrix â€” CN/US columns', to: '/matrix' },
+      { label: 'Master Matrix — CN/US columns', to: '/matrix' },
       { label: 'China: 15th Five-Year Plan', to: '/read/ch16' },
       { label: 'United States Alignment', to: '/read/ch17' },
       { label: 'Time-Gate Register', to: '/roadmap' },
@@ -631,7 +631,7 @@ function ReadingPaths() {
             <Reveal key={p.id} delay={i * 0.12} y={28} className="h-full">
               <article className="flex h-full flex-col border border-hairline bg-paper p-6">
                 <p className="micro-label text-verdigris">
-                  PATH {p.id} â€” {p.time}
+                  PATH {p.id} — {p.time}
                 </p>
                 <h3 className="mt-2 font-display text-[22px] text-ink">{p.title}</h3>
                 <p className="mt-1 font-sans text-[13px] text-ink-soft">{p.audience}</p>
@@ -667,7 +667,7 @@ function ReadingPaths() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section 7 â€” Closing band                                            */
+/* Section 7 — Closing band                                            */
 /* ------------------------------------------------------------------ */
 
 function ClosingBand() {
@@ -681,7 +681,7 @@ function ClosingBand() {
         </Reveal>
         <Reveal delay={0.1}>
           <p className="mt-8 font-display text-[24px] italic leading-[1.4] text-ink">
-            â€œEverything here is dated, cited, and falsifiable â€” the error bars are the point.â€
+            “Everything here is dated, cited, and falsifiable — the error bars are the point.”
           </p>
         </Reveal>
         <Reveal delay={0.2}>
@@ -690,7 +690,7 @@ function ClosingBand() {
               to="/read/ch01"
               className="inline-block rounded-sm bg-accent px-6 py-3 font-display text-[16px] text-paper transition-colors hover:bg-accent-deep"
             >
-              Begin reading â†’
+              Begin reading →
             </Link>
           </div>
         </Reveal>
