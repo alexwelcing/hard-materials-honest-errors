@@ -1,7 +1,9 @@
-import PageHeader from '@/components/PageHeader'
+﻿import PageHeader from '@/components/PageHeader'
 import GlossaryExplorer from '@/components/glossary/GlossaryExplorer'
 
+import { usePageTitle } from '@/lib/usePageTitle'
 export default function Glossary() {
+  usePageTitle('Glossary')
   return (
     <>
       <PageHeader

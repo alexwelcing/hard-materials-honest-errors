@@ -169,6 +169,17 @@
   .prose-report sup.cite button {
     @apply cursor-pointer no-underline hover:text-accent-deep hover:underline;
   }
+  /* Citation buttons (keyboard-accessible replacement for sup.cite) */
+  .prose-report button.cite {
+    @apply cursor-pointer font-mono text-[11px] leading-none text-accent;
+    vertical-align: super;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .prose-report button.cite:hover {
+    @apply text-accent-deep underline;
+  }
   /* CaseBox: > **Box x.x — …** panels */
   .prose-report blockquote {
     @apply my-6 border-l-[3px] border-verdigris bg-faint px-5 py-4 text-[16.5px] leading-[1.65];

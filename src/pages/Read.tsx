@@ -10,11 +10,21 @@ import ChapterPager from '@/components/reader/ChapterPager'
 import { useScrollSpy } from '@/components/reader/useScrollSpy'
 import { getChapter, chapterTitle, chapterShort } from '@/lib/report'
 import { chapters, type Chapter } from '@/content/chapters'
+import { loadChapterBody, type SectionHtml } from '@/content/chapterBodies'
+import { preloadReferences } from '@/lib/data'
 import { mathifyHtml } from '@/lib/mathHtml'
 import { setReadingSession } from '@/lib/readingState'
+import { usePageTitle } from '@/lib/usePageTitle'
 import { cn } from '@/lib/utils'
 
 const pad2 = (n: number) => String(n).padStart(2, '0')
+
+/** sup.cite -> focusable button, so citations are keyboard-accessible. */
+const citeButtons = (html: string) =>
+  html.replace(
+    /<sup class="cite" data-ref="(\d+)">(\[\d+\])<\/sup>/g,
+    '<button type="button" class="cite" data-ref="$1" aria-label="Open reference $1">$2</button>',
+  )
 
 export default function Read() {
   const { chapterId } = useParams()
@@ -30,13 +40,32 @@ function ChapterReader({ chapter: ch }: { chapter: Chapter }) {
   const proseWrapRef = useRef<HTMLDivElement>(null)
   const [cite, setCite] = useState<CiteTarget | null>(null)
   const [progress, setProgress] = useState(0)
+  const [body, setBody] = useState<SectionHtml[] | null>(null)
+  usePageTitle(chapterTitle(ch))
+
+  // Body html loads as its own chunk; references prefetch for popovers.
+  useEffect(() => {
+    let live = true
+    setBody(null)
+    loadChapterBody(ch.id).then((b) => {
+      if (live) setBody(b)
+    })
+    preloadReferences()
+    return () => {
+      live = false
+    }
+  }, [ch.id])
 
   const index = chapters.findIndex((c) => c.id === ch.id)
   const prev = index > 0 ? chapters[index - 1] : undefined
   const next = index >= 0 && index < chapters.length - 1 ? chapters[index + 1] : undefined
 
-  // Typeset all section HTML once per chapter.
-  const sectionsHtml = useMemo(() => ch.sections.map((s) => mathifyHtml(s.html)), [ch])
+  // Typeset all section HTML once per chapter load.
+  const htmlByAnchor = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const s of body ?? []) map.set(s.anchor, citeButtons(mathifyHtml(s.html)))
+    return map
+  }, [body])
 
   // TOC: an entry for the top, then every titled level-2 section.
   const toc = useMemo<TocEntry[]>(
@@ -67,6 +96,7 @@ function ChapterReader({ chapter: ch }: { chapter: Chapter }) {
 
   // Reading progress → right-rail bar + persisted session (throttled ~400ms).
   useEffect(() => {
+    if (!body) return
     let lastRun = 0
     let timer: number | undefined
     const measure = () => {
@@ -97,16 +127,16 @@ function ChapterReader({ chapter: ch }: { chapter: Chapter }) {
       window.removeEventListener('scroll', onScroll)
       if (timer !== undefined) window.clearTimeout(timer)
     }
-  }, [ch.id])
+  }, [ch.id, body])
 
   // Citation popovers via click delegation on the prose container.
   const closeCite = useCallback(() => setCite(null), [])
   const onProseClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const sup = (e.target as HTMLElement).closest('sup.cite')
-    if (!sup || !proseWrapRef.current) return
-    const n = Number(sup.getAttribute('data-ref'))
+    const el = (e.target as HTMLElement).closest('.cite') as HTMLElement | null
+    if (!el || !proseWrapRef.current) return
+    const n = Number(el.getAttribute('data-ref'))
     if (!Number.isFinite(n)) return
-    const sr = sup.getBoundingClientRect()
+    const sr = el.getBoundingClientRect()
     const wr = proseWrapRef.current.getBoundingClientRect()
     const x = Math.max(0, Math.min(sr.left - wr.left, wr.width - 296))
     setCite({ n, x, y: sr.bottom - wr.top + 8 })
@@ -156,9 +186,17 @@ function ChapterReader({ chapter: ch }: { chapter: Chapter }) {
 
           {/* Chapter body */}
           <div ref={proseWrapRef} className="relative">
+            {!body && (
+              <div className="mt-10 max-w-measure animate-pulse space-y-4" aria-label="Loading chapter">
+                {[92, 100, 96, 100, 78].map((w, i) => (
+                  <div key={i} className="h-4 bg-faint" style={{ width: `${w}%` }} />
+                ))}
+              </div>
+            )}
+            {body && (
             <div className="prose-report mt-10" onClick={onProseClick}>
               {ch.sections.map((s, i) => {
-                const html = sectionsHtml[i]
+                const html = htmlByAnchor.get(s.anchor) ?? ''
                 const opener = i === 0
                 if (s.level === 2 && s.title) {
                   return (
@@ -186,6 +224,7 @@ function ChapterReader({ chapter: ch }: { chapter: Chapter }) {
                 )
               })}
             </div>
+            )}
             {cite && <CitePopover cite={cite} onClose={closeCite} />}
           </div>
 

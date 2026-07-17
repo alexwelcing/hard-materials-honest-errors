@@ -1,8 +1,10 @@
 import MiniSearch from 'minisearch'
 import { chapters } from '@/content/chapters'
-import { references } from '@/content/references'
 import { glossaryData } from '@/content/glossary'
 import { exhibits } from '@/content/exhibits'
+import { loadAllChapterBodies, type SectionHtml } from '@/content/chapterBodies'
+import { preloadReferences } from '@/lib/data'
+import type { Reference } from '@/content/references'
 
 export type SearchDocType = 'chapter' | 'reference' | 'glossary' | 'exhibit'
 
@@ -46,17 +48,18 @@ export function stripHtml(html: string): string {
 
 const truncate = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s)
 
-function buildDocs(): SearchDoc[] {
+function buildDocs(bodies: Map<string, SectionHtml[]>, references: Reference[]): SearchDoc[] {
   const docs: SearchDoc[] = []
 
   for (const ch of chapters) {
+    const htmlByAnchor = new Map((bodies.get(ch.id) ?? []).map((s) => [s.anchor, s.html]))
     for (const sec of ch.sections) {
       const secTitle = sec.title || ch.title
       docs.push({
         id: `chapter:${ch.id}:${sec.anchor}`,
         type: 'chapter',
         title: secTitle,
-        body: `${ch.title} — ${stripHtml(sec.html)}`,
+        body: `${ch.title} — ${stripHtml(htmlByAnchor.get(sec.anchor) ?? '')}`,
         eyebrow: `CH ${pad2(ch.number)} · §${secTitle.slice(0, 24)}`,
         route: `/read/${ch.id}#${sec.anchor}`,
       })
@@ -142,20 +145,34 @@ function buildDocs(): SearchDoc[] {
 }
 
 let cached: { mini: MiniSearch<SearchDoc>; docs: SearchDoc[] } | null = null
+let building: Promise<{ mini: MiniSearch<SearchDoc>; docs: SearchDoc[] }> | null = null
 
-/** Lazily build the client-side search index once at first use (§9 spec: prefix, fuzzy 0.15, title ×3). */
-export function getSearchIndex() {
-  if (cached) return cached
-  const docs = buildDocs()
-  const mini = new MiniSearch<SearchDoc>({
-    fields: ['title', 'body', 'eyebrow'],
-    storeFields: ['type', 'title', 'eyebrow', 'route', 'body'],
-    searchOptions: { prefix: true, fuzzy: 0.15, boost: { title: 3 } },
-  })
-  mini.addAll(docs)
-  cached = { mini, docs }
-  return cached
+/**
+ * The index (~855 docs) is built lazily on first search, pulling chapter
+ * bodies and references in as their own chunks — neither ships in the
+ * initial bundle. searchReport returns [] until this resolves.
+ */
+export function ensureSearchIndex() {
+  if (cached) return Promise.resolve(cached)
+  if (!building) {
+    building = Promise.all([loadAllChapterBodies(), preloadReferences()]).then(
+      ([bodies, references]) => {
+        const docs = buildDocs(bodies, references)
+        const mini = new MiniSearch<SearchDoc>({
+          fields: ['title', 'body', 'eyebrow'],
+          storeFields: ['type', 'title', 'eyebrow', 'route', 'body'],
+          searchOptions: { prefix: true, fuzzy: 0.15, boost: { title: 3 } },
+        })
+        mini.addAll(docs)
+        cached = { mini, docs }
+        return cached
+      },
+    )
+  }
+  return building
 }
+
+export const searchIndexReady = () => cached !== null
 
 export interface SearchHit {
   id: string
@@ -169,7 +186,8 @@ export interface SearchHit {
 }
 
 export function searchReport(query: string, filter: SearchDocType | 'all' = 'all'): SearchHit[] {
-  const { mini } = getSearchIndex()
+  if (!cached) return []
+  const { mini } = cached
   const q = query.trim()
   if (!q) return []
   const results = mini.search(q, {

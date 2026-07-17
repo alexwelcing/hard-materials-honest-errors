@@ -1,17 +1,19 @@
-import { Link } from 'react-router'
+﻿import { Link } from 'react-router'
 import PageHeader from '@/components/PageHeader'
 import ExhibitTable from '@/components/ExhibitTable'
 import GateTimeline from '@/components/roadmap/GateTimeline'
 import { exhibits } from '@/content/exhibits'
 import { REPORT_DATE } from '@/lib/report'
 
+import { usePageTitle } from '@/lib/usePageTitle'
 export default function Roadmap() {
+  usePageTitle('Phased Roadmap')
   return (
     <>
       <PageHeader
-        eyebrow="EXHIBIT · CHAPTER 18"
+        eyebrow="EXHIBIT Â· CHAPTER 18"
         title="The Phased Roadmap"
-        lede={`Error-correction milestones first, validation milestones second, discovery targets third — phased against hard external gates nobody controls. Every status, deadline, and program figure is stated as of ${REPORT_DATE}.`}
+        lede={`Error-correction milestones first, validation milestones second, discovery targets third â€” phased against hard external gates nobody controls. Every status, deadline, and program figure is stated as of ${REPORT_DATE}.`}
       >
         <p className="mt-4 font-sans text-[13px] text-ink-faint">
           Full argument in{' '}
@@ -19,7 +21,7 @@ export default function Roadmap() {
             to="/read/ch18"
             className="text-accent underline decoration-hairline underline-offset-2 hover:text-accent-deep hover:decoration-accent"
           >
-            Chapter 18 — The phased roadmap
+            Chapter 18 â€” The phased roadmap
           </Link>
           .
         </p>
@@ -30,7 +32,7 @@ export default function Roadmap() {
           Time gates
         </h2>
         <p className="mt-3 max-w-measure font-serif text-[16px] leading-[1.7] text-ink-soft">
-          Ten dated events the plan must survive or exploit — ordered as the calendar orders them.
+          Ten dated events the plan must survive or exploit â€” ordered as the calendar orders them.
         </p>
         <GateTimeline gates={exhibits.gates} />
       </section>
@@ -42,7 +44,7 @@ export default function Roadmap() {
         <ExhibitTable
           table={exhibits.phases}
           idPrefix="phase"
-          caption="Three phases: months 0–24, years 2–5, years 5–10 — milestones, validation, discovery targets, funding/compute gates, hard external gates."
+          caption="Three phases: months 0â€“24, years 2â€“5, years 5â€“10 â€” milestones, validation, discovery targets, funding/compute gates, hard external gates."
         />
         <p className="mt-8 max-w-measure font-serif text-[16px] leading-[1.7] text-ink-soft">
           The phases consume the{' '}
@@ -52,7 +54,7 @@ export default function Roadmap() {
           >
             eleven discovery chains
           </Link>{' '}
-          — each discovery target is a chain's solved figure, not a new promise. The gates slip
+          â€” each discovery target is a chain's solved figure, not a new promise. The gates slip
           independently of anything this program does; when one moves, the plan re-baselines around
           the new date rather than slipping silently.
         </p>

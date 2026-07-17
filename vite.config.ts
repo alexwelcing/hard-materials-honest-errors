@@ -10,6 +10,18 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router'],
+          katex: ['katex'],
+          motion: ['framer-motion', 'gsap', '@gsap/react', 'lenis'],
+          search: ['minisearch'],
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

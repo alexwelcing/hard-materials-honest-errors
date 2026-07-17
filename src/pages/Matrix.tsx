@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+﻿import { Link } from 'react-router'
 import PageHeader from '@/components/PageHeader'
 import ExhibitTable from '@/components/ExhibitTable'
 import WedgeQuadrant from '@/components/exhibits/WedgeQuadrant'
@@ -11,13 +11,15 @@ const CROSS_LINKS = [
   { to: '/read/ch13', label: 'CHAPTER 13' },
 ]
 
+import { usePageTitle } from '@/lib/usePageTitle'
 export default function Matrix() {
+  usePageTitle('Master Matrix')
   return (
     <>
       <PageHeader
-        eyebrow="EXHIBIT · TABLE 13.1"
+        eyebrow="EXHIBIT Â· TABLE 13.1"
         title="The Master Meta-Review Matrix"
-        lede="Nine classes × dominant error modes × quantified error × CN/US policy priority × fix readiness × impact domain — the report's synthesis artifact."
+        lede="Nine classes Ã— dominant error modes Ã— quantified error Ã— CN/US policy priority Ã— fix readiness Ã— impact domain â€” the report's synthesis artifact."
       >
         <nav aria-label="Related exhibits" className="mt-6 flex flex-wrap gap-2">
           {CROSS_LINKS.map((l) => (
@@ -36,7 +38,7 @@ export default function Matrix() {
         <ExhibitTable
           table={exhibits.matrix}
           idPrefix="row"
-          caption="Table 13.1 — the master meta-review matrix: nine admitted classes against their dominant error modes, headline quantified errors, CN/US policy priorities, fix readiness with named levers, and impact domains."
+          caption="Table 13.1 â€” the master meta-review matrix: nine admitted classes against their dominant error modes, headline quantified errors, CN/US policy priorities, fix readiness with named levers, and impact domains."
           className="[&_table]:text-[13.5px]"
         />
 
@@ -47,7 +49,7 @@ export default function Matrix() {
           <ExhibitTable
             table={exhibits.nineNumbers}
             idPrefix="nine"
-            caption="One headline quantified error per admitted class — the single number each class chapter is built around, with its corpus source and the discovery chain it anchors."
+            caption="One headline quantified error per admitted class â€” the single number each class chapter is built around, with its corpus source and the discovery chain it anchors."
           />
         </section>
 

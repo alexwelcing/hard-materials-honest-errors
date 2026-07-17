@@ -1,17 +1,31 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Link } from 'react-router'
 import { MotionConfig } from 'framer-motion'
 import Layout from '@/components/Layout'
 import Home from '@/pages/Home'
-import Contents from '@/pages/Contents'
-import Read from '@/pages/Read'
-import Scoreboard from '@/pages/Scoreboard'
-import Matrix from '@/pages/Matrix'
-import Chains from '@/pages/Chains'
-import Roadmap from '@/pages/Roadmap'
-import Skeptics from '@/pages/Skeptics'
-import References from '@/pages/References'
-import Glossary from '@/pages/Glossary'
-import About from '@/pages/About'
+import ErrorBarGlyph from '@/components/ErrorBarGlyph'
+
+/* Route-level code splitting: every page (and the content it imports)
+   compiles to its own chunk, fetched on first visit. Home stays eager —
+   it is the landing page. */
+const Contents = lazy(() => import('@/pages/Contents'))
+const Read = lazy(() => import('@/pages/Read'))
+const Scoreboard = lazy(() => import('@/pages/Scoreboard'))
+const Matrix = lazy(() => import('@/pages/Matrix'))
+const Chains = lazy(() => import('@/pages/Chains'))
+const Roadmap = lazy(() => import('@/pages/Roadmap'))
+const Skeptics = lazy(() => import('@/pages/Skeptics'))
+const References = lazy(() => import('@/pages/References'))
+const Glossary = lazy(() => import('@/pages/Glossary'))
+const About = lazy(() => import('@/pages/About'))
+
+function PageLoader() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center" aria-label="Loading page">
+      <ErrorBarGlyph width={64} className="animate-pulse text-ink-faint" />
+    </div>
+  )
+}
 
 function NotFound() {
   return (
@@ -38,16 +52,86 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="contents" element={<Contents />} />
-          <Route path="read/:chapterId" element={<Read />} />
-          <Route path="scoreboard" element={<Scoreboard />} />
-          <Route path="matrix" element={<Matrix />} />
-          <Route path="chains" element={<Chains />} />
-          <Route path="roadmap" element={<Roadmap />} />
-          <Route path="skeptics" element={<Skeptics />} />
-          <Route path="references" element={<References />} />
-          <Route path="glossary" element={<Glossary />} />
-          <Route path="about" element={<About />} />
+          <Route
+            path="contents"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Contents />
+              </Suspense>
+            }
+          />
+          <Route
+            path="read/:chapterId"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Read />
+              </Suspense>
+            }
+          />
+          <Route
+            path="scoreboard"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Scoreboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="matrix"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Matrix />
+              </Suspense>
+            }
+          />
+          <Route
+            path="chains"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Chains />
+              </Suspense>
+            }
+          />
+          <Route
+            path="roadmap"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Roadmap />
+              </Suspense>
+            }
+          />
+          <Route
+            path="skeptics"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Skeptics />
+              </Suspense>
+            }
+          />
+          <Route
+            path="references"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <References />
+              </Suspense>
+            }
+          />
+          <Route
+            path="glossary"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <Glossary />
+              </Suspense>
+            }
+          />
+          <Route
+            path="about"
+            element={
+              <Suspense fallback={<PageLoader />}>
+                <About />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import { ExternalLink } from 'lucide-react'
-import { references } from '@/content/references'
-
-/** Reference lookup by citation number (built once at module load). */
-const refByN = new Map(references.map((r) => [r.n, r]))
+import { getReferenceSync } from '@/lib/data'
 
 export interface CiteTarget {
   n: number
@@ -20,16 +17,32 @@ export interface CiteTarget {
  */
 export default function CitePopover({ cite, onClose }: { cite: CiteTarget; onClose: () => void }) {
   const boxRef = useRef<HTMLDivElement>(null)
-  const ref = refByN.get(cite.n)
+  const ref = getReferenceSync(cite.n)
+
+  // Move focus into the dialog for keyboard/screen-reader users. On close,
+  // restore focus to the citation button — looked up fresh by data-ref, since
+  // the prose innerHTML subtree may have been re-created meanwhile.
+  useEffect(() => {
+    boxRef.current?.focus()
+    return () => {
+      const btn = document.querySelector(`button.cite[data-ref="${cite.n}"]`) as HTMLElement | null
+      btn?.focus()
+    }
+  }, [cite.n])
 
   useEffect(() => {
+    const openedAt = Date.now()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
     const onDown = (e: PointerEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) onClose()
     }
-    const onScroll = () => onClose()
+    // Grace period: Lenis smooth-scroll may still be settling (e.g. after a
+    // focus jump) when the popover opens — don't let that kill it instantly.
+    const onScroll = () => {
+      if (Date.now() - openedAt > 300) onClose()
+    }
     document.addEventListener('keydown', onKey)
     document.addEventListener('pointerdown', onDown, true)
     window.addEventListener('scroll', onScroll, { capture: true, passive: true })
@@ -47,7 +60,8 @@ export default function CitePopover({ cite, onClose }: { cite: CiteTarget; onClo
       ref={boxRef}
       role="dialog"
       aria-label={`Reference ${ref.n}`}
-      className="absolute z-30 w-72 max-w-[calc(100%-1rem)] rounded-sm border border-hairline bg-surface p-4"
+      tabIndex={-1}
+      className="absolute z-30 w-72 max-w-[calc(100%-1rem)] rounded-sm border border-hairline bg-surface p-4 outline-none"
       style={{ left: cite.x, top: cite.y }}
     >
       <p className="micro-label text-[10px] text-verdigris">

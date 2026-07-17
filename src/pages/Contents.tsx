@@ -1,11 +1,13 @@
-import PageHeader from '@/components/PageHeader'
+﻿import PageHeader from '@/components/PageHeader'
 import StatStrip from '@/components/contents/StatStrip'
 import ReadingPaths from '@/components/contents/ReadingPaths'
 import PartSection from '@/components/contents/PartSection'
 import BackMatter from '@/components/contents/BackMatter'
 import { PARTS, REPORT_DATE, REPORT_STATS } from '@/lib/report'
 
+import { usePageTitle } from '@/lib/usePageTitle'
 export default function Contents() {
+  usePageTitle('Contents')
   return (
     <div className="pb-24">
       <PageHeader

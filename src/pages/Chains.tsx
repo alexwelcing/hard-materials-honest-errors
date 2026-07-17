@@ -1,16 +1,18 @@
-import { Link } from 'react-router'
+﻿import { Link } from 'react-router'
 import PageHeader from '@/components/PageHeader'
 import ExhibitTable from '@/components/ExhibitTable'
 import ChainCardView from '@/components/chains/ChainCardView'
 import { exhibits } from '@/content/exhibits'
 
+import { usePageTitle } from '@/lib/usePageTitle'
 export default function Chains() {
+  usePageTitle('Discovery Chains')
   return (
     <>
       <PageHeader
-        eyebrow="EXHIBIT · CHAPTER 15"
+        eyebrow="EXHIBIT Â· CHAPTER 15"
         title="Eleven Discovery Chains"
-        lede="Every chain obeys a strict grammar: because we have unlocked a named error-correction capability → we will discover X → with X we build Y → this impacts people in Z ways. No chain names a discovery date — each names the error that must fall, the figure that proves it fell, and the gate that pays for the fall."
+        lede="Every chain obeys a strict grammar: because we have unlocked a named error-correction capability â†’ we will discover X â†’ with X we build Y â†’ this impacts people in Z ways. No chain names a discovery date â€” each names the error that must fall, the figure that proves it fell, and the gate that pays for the fall."
       >
         <p className="mt-4 font-sans text-[13px] text-ink-faint">
           Full argument in{' '}
@@ -18,7 +20,7 @@ export default function Chains() {
             to="/read/ch15"
             className="text-accent underline decoration-hairline underline-offset-2 hover:text-accent-deep hover:decoration-accent"
           >
-            Chapter 15 — Discovery chains
+            Chapter 15 â€” Discovery chains
           </Link>
           .
         </p>

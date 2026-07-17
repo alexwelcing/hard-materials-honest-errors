@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { chapterTitle } from '@/lib/report'
-import type { Chapter, Section } from '@/content/chapters'
+import type { Chapter, SectionMeta } from '@/content/chapters'
 import ReadDot from './ReadDot'
 
 const pad2 = (n: number) => String(n).padStart(2, '0')
 
 /** Level-2 section titles with real headings, linkable by anchor. */
-const tocSections = (ch: Chapter): Section[] =>
+const tocSections = (ch: Chapter): SectionMeta[] =>
   ch.sections.filter((s) => s.level === 2 && s.title.trim().length > 0)
 
 /** One chapter row: read dot, number, title, mono meta; sections behind an expander. */

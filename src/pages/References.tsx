@@ -1,8 +1,10 @@
-import PageHeader from '@/components/PageHeader'
+﻿import PageHeader from '@/components/PageHeader'
 import ReferenceLibrary from '@/components/references/ReferenceLibrary'
 import { REPORT_DATE } from '@/lib/report'
 
+import { usePageTitle } from '@/lib/usePageTitle'
 export default function References() {
+  usePageTitle('Reference Library')
   return (
     <>
       <PageHeader

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import {
   searchReport,
   makeSnippet,
-  getSearchIndex,
+  ensureSearchIndex,
   getRecentSearches,
   addRecentSearch,
   SEARCH_TYPE_LABELS,
@@ -41,8 +41,14 @@ export default function SearchOverlay({
   const [filter, setFilter] = useState<SearchDocType | 'all'>('all')
   const [active, setActive] = useState(0)
   const [recents, setRecents] = useState<string[]>([])
+  const [indexSize, setIndexSize] = useState<number | null>(null)
 
-  const indexSize = useMemo(() => getSearchIndex().docs.length, [])
+  /* Build the search index on first open (async — content loads as chunks). */
+  useEffect(() => {
+    if (open && indexSize === null) {
+      ensureSearchIndex().then(({ docs }) => setIndexSize(docs.length))
+    }
+  }, [open, indexSize])
 
   /* Global hotkeys: ⌘K / Ctrl+K toggles, `/` opens. */
   useEffect(() => {
@@ -79,7 +85,7 @@ export default function SearchOverlay({
     }
   }, [open])
 
-  const hits = useMemo(() => searchReport(query, filter), [query, filter])
+  const hits = useMemo(() => searchReport(query, filter), [query, filter, indexSize])
 
   const grouped = useMemo(() => {
     const groups: { type: SearchDocType; items: { hit: SearchHit; flat: number }[] }[] = []
@@ -232,7 +238,9 @@ export default function SearchOverlay({
         </div>
 
         <div className="flex items-center justify-between border-t border-hairline px-4 py-2">
-          <span className="font-mono text-[11px] text-ink-faint">{indexSize} documents indexed</span>
+          <span className="font-mono text-[11px] text-ink-faint">
+            {indexSize === null ? 'Indexing…' : `${indexSize} documents indexed`}
+          </span>
           <span className="font-mono text-[11px] text-ink-faint">↑↓ navigate · ↵ open · esc close</span>
         </div>
       </DialogContent>
